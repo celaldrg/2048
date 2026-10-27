@@ -1,0 +1,11 @@
+{
+  "name": "2048",
+  "version": "1.0.0",
+  "description": "A polished, mobile-friendly take on the 2048 sliding-tile puzzle with undo, swipe controls and EN/TR language support.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}
