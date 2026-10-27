@@ -52,11 +52,13 @@ The tests need Node.js 18 or newer and have no dependencies. They cover:
 - the merge rules, including `[2,2,2,2] -> [4,4,0,0]`, `[2,2,4,0]`, `[4,4,4,0]`, `[2,0,2,2]` and `[8,8,16,16]`, in all four directions;
 - that a move which changes nothing does not spawn a tile or use a random number, and that tiles only spawn into empty cells (about 10% of them are 4s);
 - game-over detection, and a win that fires exactly once (plus "keep playing");
+- that a winning move which also ends the game shows the win overlay first and game over after "keep playing", and that undo waits while the win overlay is open;
 - that undo restores board, score, tile ids and RNG state exactly (15 steps), and that the undo limit holds;
 - save/restore through JSON and rejection of corrupt save data;
 - the seeded RNG, the demo position and the storage helper (which never throws);
 - matching English/Turkish strings, and that every string in `index.html` goes through the translation table;
-- the keyboard and swipe mapping.
+- the keyboard and swipe mapping;
+- that every tile value up to 131072 has its own colour in `style.css`.
 
 ## Project structure
 
@@ -71,6 +73,7 @@ src/
   storage.js        localStorage helper that never throws
   i18n.js           English and Turkish strings
   controls.js       key and swipe mapping
+  overlay.js        which overlay shows, and when undo is allowed
   view.js           DOM board with animated tiles
   input.js          keyboard and pointer listeners
   main.js           connects everything on the page
@@ -78,7 +81,7 @@ test/               node:test suites
 docs/screenshot.png
 ```
 
-Game logic (`rng`, `board`, `game`, `demo`, `storage`, `i18n`, `controls`) is pure and has no DOM access at import time, so Node can test it directly.
+Game logic (`rng`, `board`, `game`, `demo`, `storage`, `i18n`, `controls`, `overlay`) is pure and has no DOM access at import time, so Node can test it directly.
 
 ## License
 
@@ -135,11 +138,13 @@ Testler Node.js 18 veya üstü ister ve bağımlılık gerektirmez. Kapsananlar:
 - birleşme kuralları, dört yönde de: `[2,2,2,2] -> [4,4,0,0]`, `[2,2,4,0]`, `[4,4,4,0]`, `[2,0,2,2]` ve `[8,8,16,16]`;
 - tahtayı değiştirmeyen hamlenin taş üretmemesi ve rastgele sayı harcamaması, yeni taşların yalnızca boş karelere gelmesi (yaklaşık %10'u 4);
 - oyun bitti tespiti ve yalnızca bir kez tetiklenen kazanma (ayrıca "devam et");
+- kazandıran hamle oyunu da bitirirse önce kazanma ekranının, "devam et"ten sonra oyun bitti ekranının gelmesi ve kazanma ekranı açıkken geri almanın beklemesi;
 - geri almanın tahtayı, skoru, taş kimliklerini ve RNG durumunu birebir geri getirmesi (15 adım) ve geri alma sınırı;
 - JSON üzerinden kaydetme/yükleme ve bozuk kayıt verisinin reddedilmesi;
 - tohumlu RNG, demo konumu ve hiç hata fırlatmayan depolama yardımcısı;
 - İngilizce/Türkçe metinlerin eşleşmesi ve `index.html` içindeki her metnin çeviri tablosundan geçmesi;
-- klavye ve kaydırma eşlemesi.
+- klavye ve kaydırma eşlemesi;
+- 131072'ye kadar her taş değerinin `style.css` içinde kendine ait bir rengi olması.
 
 ### Lisans
 

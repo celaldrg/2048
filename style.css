@@ -324,7 +324,14 @@ body {
 .tile[data-value="512"]  { --tile-bg: #e4500c; --tile-fg: #fff7ed; --tile-glow: rgba(234, 88, 12, 0.35); }
 .tile[data-value="1024"] { --tile-bg: #f97316; --tile-fg: #1a0d03; --tile-glow: rgba(249, 115, 22, 0.45); }
 .tile[data-value="2048"] { --tile-bg: linear-gradient(135deg, #fb923c, #facc15); --tile-fg: #1a1203; --tile-glow: rgba(250, 204, 21, 0.55); }
-.tile[data-super]        { --tile-bg: linear-gradient(135deg, #f97316, #db2777 55%, #7c3aed); --tile-fg: #ffffff; --tile-glow: rgba(219, 39, 119, 0.5); }
+/* Past 2048 ([data-super]) the text turns white and each value gets its own gradient, up to the largest possible tile. */
+.tile[data-super]          { --tile-fg: #ffffff; }
+.tile[data-value="4096"]   { --tile-bg: linear-gradient(135deg, #f97316, #e11d48); --tile-glow: rgba(244, 63, 94, 0.45); }
+.tile[data-value="8192"]   { --tile-bg: linear-gradient(135deg, #e11d48, #9333ea); --tile-glow: rgba(168, 85, 247, 0.45); }
+.tile[data-value="16384"]  { --tile-bg: linear-gradient(135deg, #7c3aed, #2563eb); --tile-glow: rgba(99, 102, 241, 0.5); }
+.tile[data-value="32768"]  { --tile-bg: linear-gradient(135deg, #2563eb, #0891b2); --tile-glow: rgba(6, 182, 212, 0.45); }
+.tile[data-value="65536"]  { --tile-bg: linear-gradient(135deg, #0891b2, #059669); --tile-glow: rgba(16, 185, 129, 0.45); }
+.tile[data-value="131072"] { --tile-bg: linear-gradient(135deg, #f97316, #db2777 35%, #7c3aed 65%, #0891b2); --tile-glow: rgba(249, 115, 22, 0.55); }
 
 /* ---------- Overlays ---------- */
 

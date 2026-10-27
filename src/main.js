@@ -7,6 +7,7 @@ import { BOARD_SIZE, createGame, restoreGame } from './game.js';
 import { createDemoGame } from './demo.js';
 import { createStorage, storage } from './storage.js';
 import { normalizeLanguage, otherLanguage, translate } from './i18n.js';
+import { overlayFor, undoAllowed } from './overlay.js';
 import { createBoardView } from './view.js';
 import { bindInput } from './input.js';
 
@@ -28,16 +29,17 @@ const ACTIONS = new Map([
 function start() {
   const demo = new URLSearchParams(window.location.search).has('demo');
   // The demo position must never overwrite a real saved game or best score.
-  const store = demo ? createStorage(() => undefined) : storage;
-  const game = demo ? createDemoGame() : (restoreGame(store.get(SAVE_KEY, null)) ?? createGame());
+  // The language is a preference, not game data, so it always uses the real storage.
+  const saves = demo ? createStorage(() => undefined) : storage;
+  const game = demo ? createDemoGame() : (restoreGame(saves.get(SAVE_KEY, null)) ?? createGame());
   const ui = findElements();
   const app = {
-    store,
+    saves,
     ui,
     game,
     view: createBoardView(ui.board, BOARD_SIZE),
-    best: Math.max(readBest(store), game.getState().score),
-    language: normalizeLanguage(store.get(LANGUAGE_KEY, null)),
+    best: Math.max(readBest(saves), game.getState().score),
+    language: normalizeLanguage(storage.get(LANGUAGE_KEY, null)),
     overlay: null,
   };
   applyLanguage(app);
@@ -84,7 +86,8 @@ function move(app, direction) {
 }
 
 function undo(app) {
-  if (!app.game.undo()) return;
+  if (!undoAllowed(app.game.getState())) return;
+  app.game.undo();
   app.view.sync(app.game.getState());
   save(app);
   render(app);
@@ -105,13 +108,13 @@ function keepPlaying(app) {
 
 function toggleLanguage(app) {
   app.language = otherLanguage(app.language);
-  app.store.set(LANGUAGE_KEY, app.language);
+  storage.set(LANGUAGE_KEY, app.language);
   applyLanguage(app);
 }
 
 function save(app) {
-  app.store.set(SAVE_KEY, app.game.serialize());
-  app.store.set(BEST_KEY, app.best);
+  app.saves.set(SAVE_KEY, app.game.serialize());
+  app.saves.set(BEST_KEY, app.best);
 }
 
 /** Updates the score HUD, the undo buttons and the overlays from the game state. */
@@ -119,17 +122,11 @@ function render(app) {
   const state = app.game.getState();
   app.ui.score.textContent = String(state.score);
   app.ui.best.textContent = String(app.best);
+  const canUndo = undoAllowed(state);
   app.ui.undoButtons.forEach((button) => {
-    button.disabled = !state.canUndo;
+    button.disabled = !canUndo;
   });
   showOverlay(app, overlayFor(state));
-}
-
-/** @returns {'win' | 'over' | null} */
-function overlayFor(state) {
-  if (state.over) return 'over';
-  if (state.won && !state.keepPlaying) return 'win';
-  return null;
 }
 
 function showOverlay(app, kind) {
